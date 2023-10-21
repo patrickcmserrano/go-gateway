@@ -58,3 +58,12 @@ Regras do processador de pagamentos:
         - repository
     - presenter
         - definira o padrao da mensagem a ser enviada via apache kafka
+
+- Tecnologias a serem utilizadas
+  - Frontend Painel: Next.js
+  - Backend Painel: Nest.js
+  - Microsserviço de processamento: Goland 
+  - Apache Kafka
+  - Prometheus e Grafana
+  - Docker e Kubernetes
+
