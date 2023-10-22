@@ -3,6 +3,7 @@ package entity
 import (
 	"errors"
 	"regexp"
+	"time"
 )
 
 type CreditCard struct {
@@ -33,6 +34,14 @@ func (c *CreditCard) IsValid() error {
 	if err != nil {
 		return err
 	}
+	err = c.validateExpirationMonth()
+	if err != nil {
+		return err
+	}
+	err = c.validateExpirationYear()
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -42,4 +51,18 @@ func (c *CreditCard) validateNumber() error {
 		return errors.New("invalid credit card number")
 	}
 	return nil
+}
+
+func (c *CreditCard) validateExpirationMonth() error {
+	if c.expirationMonth > 0 && c.expirationMonth < 13 {
+		return nil
+	}
+	return errors.New("invalid credit card expiration month")
+}
+
+func (c *CreditCard) validateExpirationYear() error {
+	if c.expirationYear >= time.Now().Year() {
+		return nil
+	}
+	return errors.New("invalid credit card expiration year")
 }
