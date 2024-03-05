@@ -1,6 +1,10 @@
 package process_transaction
 
 import (
+	"github.com/patrickcmserrano/go-gateway/domain/entity"
+	mock_repository "github.com/patrickcmserrano/go-gateway/domain/repository/mock"
+	"github.com/stretchr/testify/assert"
+	"go.uber.org/mock/gomock"
 	"testing"
 	"time"
 )
@@ -22,7 +26,7 @@ func TestProcessTransaction_ExecuteInvalidCreditCard(t *testing.T) {
 		ErrorMessage: "invalid credit card number",
 	}
 
-	ctrl := gomock.NewCrontroller(t)
+	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
 	repositoryMock := mock_repository.NewMockTransactionRepository(ctrl)
