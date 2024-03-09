@@ -30,5 +30,7 @@ func (p *ProcessTransaction) Execute(input TransactionDtoInput) (TransactionDtoO
 			ErrorMessage: invalidCC.Error(),
 		}, nil
 	}
+	transaction.SetCreditCard(*cc)
+	invalidTransaction := transaction.IsValid()
 	return TransactionDtoOutput{}, nil
 }
