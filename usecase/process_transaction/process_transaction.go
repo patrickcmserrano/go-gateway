@@ -18,19 +18,50 @@ func (p *ProcessTransaction) Execute(input TransactionDtoInput) (TransactionDtoO
 	transaction.ID = input.ID
 	transaction.AccountID = input.AccountID
 	transaction.Amount = input.Amount
-	_, invalidCC := entity.NewCreditCard(input.CreditCardNumber, input.CreditCardName, input.CreditCardExpirationMonth, input.CreditCardExpirationYear, input.CreditCardCVV)
+
+	// Tenta criar um novo cartão de crédito
+	cc, invalidCC := entity.NewCreditCard(input.CreditCardNumber, input.CreditCardName, input.CreditCardExpirationMonth, input.CreditCardExpirationYear, input.CreditCardCVV)
 	if invalidCC != nil {
+		// Se o cartão de crédito for inválido, insere uma transação rejeitada no repositório
 		err := p.Repository.Insert(transaction.ID, transaction.AccountID, transaction.Amount, entity.REJECTED, invalidCC.Error())
 		if err != nil {
 			return TransactionDtoOutput{}, err
 		}
+		// Retorna a saída da transação com status REJECTED e a mensagem de erro
 		return TransactionDtoOutput{
 			ID:           transaction.ID,
 			Status:       entity.REJECTED,
 			ErrorMessage: invalidCC.Error(),
 		}, nil
 	}
+
+	// Associa o cartão de crédito à transação
 	transaction.SetCreditCard(*cc)
+	// Verifica se a transação é válida
 	invalidTransaction := transaction.IsValid()
-	return TransactionDtoOutput{}, nil
+	if invalidTransaction != nil {
+		// Se a transação for inválida, insere uma transação rejeitada no repositório
+		err := p.Repository.Insert(transaction.ID, transaction.AccountID, transaction.Amount, entity.REJECTED, invalidTransaction.Error())
+		if err != nil {
+			return TransactionDtoOutput{}, err
+		}
+		// Retorna a saída da transação com status REJECTED e a mensagem de erro
+		return TransactionDtoOutput{
+			ID:           transaction.ID,
+			Status:       entity.REJECTED,
+			ErrorMessage: invalidTransaction.Error(),
+		}, nil
+	}
+
+	// Se a transação for válida, insere uma transação aprovada no repositório
+	err := p.Repository.Insert(transaction.ID, transaction.AccountID, transaction.Amount, entity.APPROVED, "")
+	if err != nil {
+		return TransactionDtoOutput{}, err
+	}
+	// Retorna a saída da transação com status APPROVED
+	return TransactionDtoOutput{
+		ID:           transaction.ID,
+		Status:       entity.APPROVED,
+		ErrorMessage: "",
+	}, nil
 }
