@@ -29,7 +29,6 @@ Regras do processador de pagamentos:
 - Toda transação entre os valores de $1 e $1000 sempre será aprovadas
 - Para que uma transação seja aprovada, os dados do cartão de crédito deve ser válidos
 
-
 * Caso de uso: "process transaction"
 
 1. Receberá os dados de uma transação
@@ -66,4 +65,71 @@ Regras do processador de pagamentos:
   - Apache Kafka
   - Prometheus e Grafana
   - Docker e Kubernetes
+
+## Como Compilar e Rodar o Projeto
+
+1. Clone o repositório:
+   ```sh
+   git clone https://github.com/patrickcmserrano/go-gateway.git
+   cd go-gateway
+   ```
+
+2. Inicialize o módulo Go:
+   ```sh
+   go mod init github.com/patrickcmserrano/go-gateway
+   ```
+
+3. Compile o projeto:
+   ```sh
+   go build -o bin/go-gateway main.go
+   ```
+
+4. Configure as variáveis de ambiente necessárias:
+   ```sh
+   export DB_HOST=localhost
+   export DB_USER=usuario
+   export DB_PASSWORD=senha
+   export DB_NAME=go_gateway
+   export KAFKA_BROKER=localhost:9092
+   ```
+
+5. Execute o projeto:
+   ```sh
+   ./bin/go-gateway
+   ```
+
+## Como Rodar o Projeto com Docker
+
+1. Clone o repositório:
+   ```sh
+   git clone https://github.com/patrickcmserrano/go-gateway.git
+   cd go-gateway
+   ```
+
+2. Construa e execute os containers com `docker-compose`:
+   ```sh
+   docker-compose up -d
+   ```
+
+3. Se você atualizar as dependências no container, reconstrua e execute os containers:
+   ```sh
+   docker-compose up -d --build
+   ```
+
+4. Acesse o container em execução:
+   ```sh
+   docker exec -it go-gateway-app-1 bash
+   ```
+
+## Como Rodar os Testes
+
+1. Execute todos os testes:
+   ```sh
+   go test ./...
+   ```
+
+2. Execute testes específicos:
+   ```sh
+   go test -v ./path/to/your/package
+   ```
 
